@@ -4,7 +4,6 @@ const twilio = require("twilio");
 const { isValidIndianNumber, generateOtp } = require("./helpers/helper"); // Import functions
 
 const app = express();
-const router = express.Router();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
@@ -19,12 +18,12 @@ const client = twilio(accountSid, authToken);
 let otpStore = {};
 
 
-router.get('/', (req, res)=> {
+app.get('/', (req, res)=> {
   return res.status(200).json({ success: true, message: "say hello successfully" });
 })
 
 // Send OTP Endpoint
-router.post("/api/send-otp", async (req, res) => {
+app.post("/api/send-otp", async (req, res) => {
     const { mobileNumber } = req.body;
   
     if (!mobileNumber || !isValidIndianNumber(mobileNumber)) {
@@ -52,7 +51,7 @@ router.post("/api/send-otp", async (req, res) => {
   });
   
   // Verify OTP Endpoint
-  router.post("/api/verify-otp", (req, res) => {
+  app.post("/api/verify-otp", (req, res) => {
     const { mobileNumber, otp } = req.body;
   
     if (!mobileNumber || !otp) {
