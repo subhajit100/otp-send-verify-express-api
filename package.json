@@ -1,10 +1,9 @@
 {
-  "name": "vihang-backend",
+  "name": "otp-send-verify-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "netlify deploy --prod"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -13,12 +12,9 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
-    "serverless-http": "^3.2.0",
     "twilio": "^5.4.2"
   },
   "devDependencies": {
-    "dotenv": "^16.4.7",
-    "netlify-cli": "^18.0.3",
-    "netlify-lambda": "^2.0.16"
+    "dotenv": "^16.4.7"
   }
 }

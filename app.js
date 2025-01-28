@@ -1,8 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const serverless = require('serverless-http');
 const twilio = require("twilio");
-const { isValidIndianNumber, generateOtp } = require("../helper"); // Import functions
+const { isValidIndianNumber, generateOtp } = require("./helpers/helper"); // Import functions
 
 const app = express();
 const router = express.Router();
@@ -75,10 +74,7 @@ router.post("/api/send-otp", async (req, res) => {
   });
 
 // Start the server
-// app.listen(PORT, () => {
-//     console.log(`Server is running on http://localhost:${PORT}`);
-//   });
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 
-app.use('/.netlify/functions/api', router)
-
-module.exports.handler = serverless(app); 
