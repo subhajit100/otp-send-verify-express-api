@@ -1,14 +1,15 @@
 require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
+const serverless = require('serverless-http');
 const twilio = require("twilio");
-const { isValidIndianNumber, generateOtp } = require("./helper"); // Import functions
+const { isValidIndianNumber, generateOtp } = require("../helper"); // Import functions
 
 const app = express();
+const router = express.Router();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -19,8 +20,12 @@ const client = twilio(accountSid, authToken);
 let otpStore = {};
 
 
+router.get('/', (req, res)=> {
+  return res.status(200).json({ success: true, message: "say hello successfully" });
+})
+
 // Send OTP Endpoint
-app.post("/api/send-otp", async (req, res) => {
+router.post("/api/send-otp", async (req, res) => {
     const { mobileNumber } = req.body;
   
     if (!mobileNumber || !isValidIndianNumber(mobileNumber)) {
@@ -48,7 +53,7 @@ app.post("/api/send-otp", async (req, res) => {
   });
   
   // Verify OTP Endpoint
-  app.post("/api/verify-otp", (req, res) => {
+  router.post("/api/verify-otp", (req, res) => {
     const { mobileNumber, otp } = req.body;
   
     if (!mobileNumber || !otp) {
@@ -70,6 +75,10 @@ app.post("/api/send-otp", async (req, res) => {
   });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+// app.listen(PORT, () => {
+//     console.log(`Server is running on http://localhost:${PORT}`);
+//   });
+
+app.use('/.netlify/functions/api', router)
+
+module.exports.handler = serverless(app); 
