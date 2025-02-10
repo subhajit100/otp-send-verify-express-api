@@ -10,8 +10,6 @@ const PORT = process.env.PORT || 8000;
 // Middleware
 app.use(express.json());
 
-const minRadius = 300;
-
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -81,18 +79,19 @@ app.post("/api/verify-otp", (req, res) => {
   });
 
 app.post("/api/places", (req, res) => {
-  let { category, lat, lng } = req.body;
+  let { category, lat, lng, searchRadius } = req.body;
 
-  if (!category || lat === undefined || lng === undefined) {
+  if (!category || lat === undefined || lng === undefined || searchRadius == undefined) {
       return res.status(400).json({ error: "Missing required fields", success: false });
   }
 
   category = category.toLowerCase(); // Convert category to lowercase
   lat = Number(lat); // Convert lat to number
   lng = Number(lng); // Convert lng to number
+  searchRadius = Number(searchRadius); // Convert lng to number
 
-  if (isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({ error: "Invalid latitude or longitude", success: false });
+  if (isNaN(lat) || isNaN(lng) || isNaN(searchRadius)) {
+      return res.status(400).json({ error: "Invalid latitude or longitude or searchRadius", success: false });
   }
   
   if (!places[category]) {
@@ -103,7 +102,7 @@ app.post("/api/places", (req, res) => {
   const nearbyPlaces = places[category].filter(place => {
       const placeLat = place.geometry.location.lat;
       const placeLng = place.geometry.location.lng;
-      return getDistance(lat, lng, placeLat, placeLng) <= minRadius;
+      return getDistance(lat, lng, placeLat, placeLng) <= searchRadius;
   });
 
   res.json({ nearbyPlaces });
