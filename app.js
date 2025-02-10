@@ -110,9 +110,10 @@ app.post("/api/places", (req, res) => {
 
 // GET: Return list of categories
 app.get("/api/categories", (req, res) => {
-  const categories = Object.keys(places).map(
-      category => category.charAt(0).toUpperCase() + category.slice(1)
-  );
+  const categories = Object.keys(places).map((category, index) => ({
+      id: index + 1,
+      name: category.charAt(0).toUpperCase() + category.slice(1)
+  }));
   res.json({ categories });
 });
 
