@@ -19,9 +19,9 @@ const client = twilio(accountSid, authToken);
 let otpStore = {};
 
 
-app.get('/', (req, res)=> {
-  return res.status(200).json({ success: true, message: "say hello successfully" });
-})
+// app.get('/', (req, res)=> {
+//   return res.status(200).json({ success: true, message: "say hello successfully" });
+// })
 
 // Send OTP Endpoint
 app.post("/api/send-otp", async (req, res) => {
@@ -106,6 +106,14 @@ app.post("/api/places", (req, res) => {
   });
 
   res.json({ nearbyPlaces });
+});
+
+// GET: Return list of categories
+app.get("/api/categories", (req, res) => {
+  const categories = Object.keys(places).map(
+      category => category.charAt(0).toUpperCase() + category.slice(1)
+  );
+  res.json({ categories });
 });
 
 
