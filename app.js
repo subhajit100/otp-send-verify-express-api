@@ -1,13 +1,16 @@
 require("dotenv").config();
 const express = require("express");
 const twilio = require("twilio");
-const { isValidIndianNumber, generateOtp } = require("./helpers/helper"); // Import functions
+const { isValidIndianNumber, generateOtp, getDistance } = require("./helpers/helper"); // Import functions
+const { places } = require("./helpers/places");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(express.json());
+
+const minRadius = 300;
 
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -53,7 +56,7 @@ app.post("/api/send-otp", async (req, res) => {
   });
   
   // Verify OTP Endpoint
-  app.post("/api/verify-otp", (req, res) => {
+app.post("/api/verify-otp", (req, res) => {
 
     // TODO:- Uncomment this when real scenario
     // const { mobileNumber, otp } = req.body;
@@ -76,6 +79,36 @@ app.post("/api/send-otp", async (req, res) => {
     // }
     return res.status(200).json({ success: true, message: "OTP verified successfully" });
   });
+
+app.post("/api/places", (req, res) => {
+  let { category, lat, lng } = req.body;
+
+  if (!category || lat === undefined || lng === undefined) {
+      return res.status(400).json({ error: "Missing required fields", success: false });
+  }
+
+  category = category.toLowerCase(); // Convert category to lowercase
+  lat = Number(lat); // Convert lat to number
+  lng = Number(lng); // Convert lng to number
+
+  if (isNaN(lat) || isNaN(lng)) {
+      return res.status(400).json({ error: "Invalid latitude or longitude", success: false });
+  }
+  
+  if (!places[category]) {
+      return res.status(400).json({ error: "Invalid category" , success: false});
+  }
+
+  // Filter places within 500 meters
+  const nearbyPlaces = places[category].filter(place => {
+      const placeLat = place.geometry.location.lat;
+      const placeLng = place.geometry.location.lng;
+      return getDistance(lat, lng, placeLat, placeLng) <= minRadius;
+  });
+
+  res.json({ nearbyPlaces });
+});
+
 
 // Start the server
 app.listen(PORT, () => {
