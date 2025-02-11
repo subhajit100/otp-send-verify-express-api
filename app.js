@@ -18,6 +18,13 @@ const client = twilio(accountSid, authToken);
 // Temporary storage for OTP
 let otpStore = {};
 
+const categoriesData = ["restroom", "retail", "parking", "spiritual"];
+const getCategoryString = (categoryIndex) => {
+  if(categoryIndex<0 && categoryIndex>categoriesData.length){
+    return undefined;
+  }
+  return categoriesData[categoryIndex-1];
+}
 
 // app.get('/', (req, res)=> {
 //   return res.status(200).json({ success: true, message: "say hello successfully" });
@@ -81,27 +88,29 @@ app.post("/api/verify-otp", (req, res) => {
 app.post("/api/places", (req, res) => {
   let { category, lat, lng, searchRadius } = req.body;
 
-  if (!category || lat === undefined || lng === undefined || searchRadius == undefined) {
+  if (category == undefined || lat === undefined || lng === undefined || searchRadius == undefined) {
       return res.status(400).json({ error: "Missing required fields", success: false });
   }
 
-  category = category.toLowerCase(); // Convert category to lowercase
+  category = Number(category);
   lat = Number(lat); // Convert lat to number
   lng = Number(lng); // Convert lng to number
   searchRadius = Number(searchRadius); // Convert lng to number
 
-  if (isNaN(lat) || isNaN(lng) || isNaN(searchRadius)) {
+  if (isNaN(category) || isNaN(lat) || isNaN(lng) || isNaN(searchRadius)) {
       return res.status(400).json({ error: "Invalid latitude or longitude or searchRadius", success: false });
   }
+
+  category = getCategoryString(category);
   
-  if (!places[category]) {
+  if (category == undefined || !places[category]) {
       return res.status(400).json({ error: "Invalid category" , success: false});
   }
 
   // Filter places within 500 meters
   const nearbyPlaces = places[category].filter(place => {
-      const placeLat = place.geometry.location.lat;
-      const placeLng = place.geometry.location.lng;
+      const placeLat = place.lat;
+      const placeLng = place.lng;
       return getDistance(lat, lng, placeLat, placeLng) <= searchRadius;
   });
 
@@ -112,7 +121,8 @@ app.post("/api/places", (req, res) => {
 app.get("/api/categories", (req, res) => {
   const categories = Object.keys(places).map((category, index) => ({
       id: index + 1,
-      name: category.charAt(0).toUpperCase() + category.slice(1)
+      name: category.charAt(0).toUpperCase() + category.slice(1),
+      icon: ""
   }));
   res.json({ categories });
 });
