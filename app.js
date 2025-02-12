@@ -3,12 +3,15 @@ const express = require("express");
 const twilio = require("twilio");
 const { isValidIndianNumber, generateOtp, getDistance } = require("./helpers/helper"); // Import functions
 const { places } = require("./helpers/places");
+const { shops } = require("./helpers/shops");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(express.json());
+
+app.use("/images", express.static("public/images"));
 
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -122,9 +125,14 @@ app.get("/api/categories", (req, res) => {
   const categories = Object.keys(places).map((category, index) => ({
       id: index + 1,
       name: category.charAt(0).toUpperCase() + category.slice(1),
-      icon: ""
+      icon: `/images/${category}.png`
   }));
   res.json({ categories });
+});
+
+// GET: Return list of categories
+app.get("/api/shops", (req, res) => {
+  res.json({ shops });
 });
 
 
