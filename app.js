@@ -1,14 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const twilio = require("twilio");
-const { isValidIndianNumber, generateOtp, getDistance } = require("./helpers/helper"); // Import functions
-const { places } = require("./helpers/places");
-const { shops } = require("./helpers/shops");
 
 const otpRoutes = require("./routes/otp.routes");
 const placeRoutes = require("./routes/place.routes");
 const categoryRoutes = require("./routes/category.routes");
 const shopRoutes = require("./routes/shop.routes");
+const userRoutes = require("./routes/user.routes");
 const db = require("./models");
 
 const app = express();
@@ -38,6 +36,7 @@ app.use("/api/otp", otpRoutes);
 app.use("/api/places", placeRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/shops", shopRoutes);
+app.use("/api/users", userRoutes);
 
 // GET: Return list of categories
 // app.get("/api/categories", (req, res) => {
