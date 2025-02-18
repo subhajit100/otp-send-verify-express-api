@@ -42,19 +42,23 @@ router.post("/send", async (req, res) => {
 });
 
 // Verify OTP Endpoint
-router.post("/verify", (req, res) => {
+router.post("/verify", async (req, res) => {
   // TODO:- Uncomment this when real scenario
-  // const { mobileNumber, otp } = req.body;
+  const { mobileNumber, otp } = req.body;
 
-  // if (!mobileNumber || !otp) {
-  //   return res.status(400).json({ error: "Mobile number and OTP are required" });
-  // }
+  if (!mobileNumber || !otp) {
+    return res
+      .status(400)
+      .json({ error: "Mobile number and OTP are required" });
+  }
 
-  // if (!isValidIndianNumber(mobileNumber)) {
-  //   return res.status(400).json({ error: "Invalid Indian mobile number" });
-  // }
+  if (!isValidIndianNumber(mobileNumber)) {
+    return res.status(400).json({ error: "Invalid Indian mobile number" });
+  }
 
-  // const formattedNumber = mobileNumber.startsWith("+91") ? mobileNumber : `+91${mobileNumber}`;
+  const formattedNumber = mobileNumber.startsWith("+91")
+    ? mobileNumber
+    : `+91${mobileNumber}`;
 
   // if (otpStore[formattedNumber] === otp) {
   //   delete otpStore[formattedNumber];
@@ -62,7 +66,21 @@ router.post("/verify", (req, res) => {
   // } else {
   //   return res.status(400).json({ success: false, error: "Invalid OTP or expired" });
   // }
-  return res
-    .status(200)
-    .json({ success: true, message: "OTP verified successfully" });
+  // TODO:- I have to send the user here, when it is verified properly.
+  try {
+    // Find user by ID
+    let user = await User.findOne({ where: { mobileNumber } });
+    if (!user) {
+      return res.status(404).json({ error: "User not found", success: false });
+    }
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "OTP verified successfully",
+        user: user,
+      });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to verify OTP", success: false });
+  }
 });
