@@ -7,6 +7,7 @@ const placeRoutes = require("./routes/place.routes");
 const categoryRoutes = require("./routes/category.routes");
 const shopRoutes = require("./routes/shop.routes");
 const userRoutes = require("./routes/user.routes");
+const zoneRoutes = require("./routes/zone.routes");
 const db = require("./models");
 
 const app = express();
@@ -39,6 +40,7 @@ app.use("/api/places", placeRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/shops", shopRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/zones", zoneRoutes);
 
 // GET: Return list of categories
 // app.get("/api/categories", (req, res) => {

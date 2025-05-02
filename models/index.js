@@ -3,13 +3,17 @@ const User = require("./user.model");
 const Category = require("./category.model");
 const Shop = require("./shop.model");
 const Place = require("./place.model");
+const Zone = require("./zone.model");
+const ZonePos = require("./zonepos.model");
 
 const db = {
   sequelize,
   User,
   Category,
   Shop,
-  Place
+  Place,
+  Zone,
+  ZonePos
 };
 
 // Sync Models
